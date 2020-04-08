@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  wordpress-mysql:
+  - apiVersion: v2
+    appVersion: 4.8-apache
+    created: "2020-04-08T20:50:25.379277246+03:00"
+    description: A Helm chart for Lesson 4 Exercise
+    digest: 4af69f8f9c890b7a4b833e2252017a38c373cd029a4ba70cc9da7153279ac684
+    name: wordpress-mysql
+    type: application
+    urls:
+    - https://samer-habash.github.io/mysql-wordpress-chart/wordpress-mysql-5.6.tgz
+    version: "5.6"
+generated: "2020-04-08T20:50:25.378634391+03:00"

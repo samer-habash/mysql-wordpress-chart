@@ -12,7 +12,8 @@ metadata:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: wp-pv-claim
+  # The default name in helpers.tpl + The release name
+  name: wp-pv-claim-app-releasev1
   labels:
     app: wordpress
 spec:
@@ -26,7 +27,8 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-pv-claim
+  # The default name in helpers.tpl + The release name
+  name: mysql-pv-claim-app-releasev1
   labels:
     app: wordpress
 spec:
@@ -36,13 +38,49 @@ spec:
     requests:
       storage: "20Gi"
 ---
+# Source: wordpress-mysql/templates/service-mysql.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  # The default name in helpers.tpl + The release name
+  name: mysql-app-releasev1
+  labels:
+    app: wordpress
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+      protocol: TCP
+  selector:
+    app: wordpress
+    tier: mysql
+  type: ClusterIP
+  clusterIP: None
+---
+# Source: wordpress-mysql/templates/service-wordpress.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  # The default name in helpers.tpl + The release name
+  name: wordpress-app-releasev1
+  labels:
+    app: wordpress
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  selector:
+    app: wordpress
+    tier: frontend
+  type: LoadBalancer
+---
 # Source: wordpress-mysql/templates/deployment-mysql.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: RELEASE-NAME-wordpress-mysql
-  labels:
-    app: wordpress
+  # The default name in helpers.tpl + The release name
+  name: mysql-app-releasev1
 spec:
   replicas: 1
   selector:
@@ -60,44 +98,44 @@ spec:
       serviceAccountName: mysql
       securityContext:
       containers:
-      - name: mysql
-        securityContext:
+        - name: mysql
+          securityContext:
             {}
-        image: mysql:5.6
-        imagePullPolicy: IfNotPresent
-        env:
-          - name: MYSQL_ROOT_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: mysql-pass
-                key: password
-        ports:
-          - containerPort: 3306
-            name: 
-            protocol: TCP
-        volumeMounts:
-          - name: mysql-persistent-storage
-            mountPath: /var/lib/mysql
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
+          image: mysql:5.6
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-pass
+                  key: password
+          ports:
+            - containerPort: 3306
+              name: 
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
       volumes:
         - name: mysql-persistent-storage
           persistentVolumeClaim:
-            claimName: mysql-pv-claim
+            claimName: mysql-pv-claim-app-releasev1
 ---
 # Source: wordpress-mysql/templates/deployment-wordpress.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: RELEASE-NAME-wordpress-mysql
-  labels:
-    app: wordpress
+  # The default name in helpers.tpl + The release name
+  name: wordpress-app-releasev1
 spec:
   replicas: 1
   selector:
@@ -115,57 +153,42 @@ spec:
       serviceAccountName: mysql
       securityContext:
       containers:
-      - name: wordpress
-        securityContext:
+        - name: wordpress
+          securityContext:
             {}
-        image: wordpress:4.8-apache
-        imagePullPolicy: IfNotPresent
-        env:
-          - name: WORDPRESS_DB_HOST
-            value:  wordpress-mysql
-          - name: WORDPRESS_DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: mysql-pass
-                key: password
-        ports:
-          - containerPort: 80
-            name: 
-            protocol: TCP
-        volumeMounts:
+          image: wordpress:4.8-apache
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WORDPRESS_DB_HOST
+              value:  wordpress-mysql
+            - name: WORDPRESS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-pass
+                  key: password
+          ports:
+            - containerPort: 80
+              name: 
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+
+          volumeMounts:
           - name: wordpress-persistent-storage
             mountPath: /var/www/html
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
       volumes:
-        - name: wordpress-persistent-storage
-          persistentVolumeClaim:
-            claimName: wp-pv-claim
+      - name: wordpress-persistent-storage
+        persistentVolumeClaim:
+          claimName: wp-pv-claim-app-releasev1
 ---
-# Source: wordpress-mysql/templates/tests/test-connection-mysql.yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: "mysql-test-connection"
-  labels:
-  app: wordpress
-  annotations:
-    "helm.sh/hook": test-success
-spec:
-  containers:
-    - name: wget
-      image: busybox
-      command: ['wget']
-      args: ['mysql:3306']
-  restartPolicy: Never
----
-# Source: wordpress-mysql/templates/tests/test-connection-wordpress.yaml
+# Source: wordpress-mysql/templates/tests/test-connection.yaml
+# Test Connection for wordpress since it can be accessed via web
 apiVersion: v1
 kind: Pod
 metadata:

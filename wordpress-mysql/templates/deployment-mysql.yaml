@@ -2,8 +2,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "wordpress-mysql.fullname" . }}
-  labels: {{- include "mysql.labels" . | nindent 4 }}
+  # The default name in helpers.tpl + The release name
+  name: {{ template "mysql.fullname" . }}-{{ .Release.Name }}
 spec:
   replicas: {{ .Values.mysql.replicaCount }}
   selector:
@@ -17,36 +17,37 @@ spec:
       serviceAccountName: {{ template "wordpress-mysql.serviceAccountName" . }}
       securityContext:
       containers:
-      - name: {{ template "mysql.fullname" . }}
-        securityContext:
-          {{- toYaml .Values.mysql.securityContext | nindent 12 }}
-        image: {{ .Values.mysql.image.repository }}
-        imagePullPolicy: {{ .Values.mysql.image.pullPolicy }}
-        env:
-          - name: {{ .Values.mysql.env.name }}
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.mysql.env.secretKeyRef.name }}
-                key: {{ .Values.mysql.env.secretKeyRef.key }}
-        ports:
-          - containerPort: {{ .Values.mysql.ports.containerPort }}
-            name: {{ .Values.mysql.ports.name }}
-            protocol: {{ .Values.mysql.ports.protocol }}
-        volumeMounts:
-          - name: {{ template "mysql.volumes" . }}
-            mountPath: {{ .Values.mysql.volumeMounts.mountPath }}
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
+        - name: {{ template "mysql.fullname" . }}
+          securityContext:
+            {{- toYaml .Values.mysql.securityContext | nindent 12 }}
+          image: {{ .Values.mysql.image.repository }}
+          imagePullPolicy: {{ .Values.mysql.image.pullPolicy }}
+          env:
+            - name: {{ .Values.mysql.env.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mysql.env.secretKeyRef.name }}
+                  key: {{ .Values.mysql.env.secretKeyRef.key }}
+          ports:
+            - containerPort: {{ .Values.mysql.ports.containerPort }}
+              name: {{ .Values.mysql.ports.name }}
+              protocol: {{ .Values.mysql.ports.protocol }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+
+          volumeMounts:
+            - name: {{ template "mysql.volumes" . }}
+              mountPath: {{ .Values.mysql.volumeMounts.mountPath }}
       volumes:
         - name: {{ template "mysql.volumes" . }}
           persistentVolumeClaim:
-            claimName: {{ template "mysql.persistentVolumeClaim" . }}
+            claimName: {{ template "mysql.persistentVolumeClaim" . }}-{{ .Release.Name }}
 
     {{- with .Values.mysql.nodeSelector }}
     nodeSelector:
@@ -60,4 +61,4 @@ spec:
     tolerations:
       {{- toYaml . | nindent 8 }}
     {{- end }}
-{{- end }}
+  {{- end }}

@@ -2,8 +2,9 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ template "wordpress.persistentVolumeClaim" . }}
-  labels: {{- include "mysql.labels" . | nindent 4 }}
+  # The default name in helpers.tpl + The release name
+  name: {{ template "wordpress.persistentVolumeClaim" . }}-{{ .Release.Name }}
+  labels: {{- include "wordpress.labels" . | nindent 4 }}
 spec:
   accessModes:
     - {{ .Values.wordpress.PersistentVolumeClaim.accessModes }}

@@ -2,7 +2,8 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ template "mysql.persistentVolumeClaim" . }}
+  # The default name in helpers.tpl + The release name
+  name: {{ template "mysql.persistentVolumeClaim" . }}-{{ .Release.Name }}
   labels: {{- include "mysql.labels" . | nindent 4 }}
 spec:
   accessModes:

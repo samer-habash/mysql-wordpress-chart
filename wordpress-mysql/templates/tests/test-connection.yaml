@@ -1,3 +1,4 @@
+# Test Connection for wordpress since it can be accessed via web
 apiVersion: v1
 kind: Pod
 metadata:

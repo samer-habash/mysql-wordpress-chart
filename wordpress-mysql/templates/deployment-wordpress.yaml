@@ -2,8 +2,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "wordpress-mysql.fullname" . }}
-  labels: {{- include "wordpress.labels" . | nindent 4 }}
+  # The default name in helpers.tpl + The release name
+  name: {{ template "wordpress.fullname" . }}-{{ .Release.Name }}
 spec:
   replicas: {{ .Values.wordpress.replicaCount }}
   selector:
@@ -17,38 +17,39 @@ spec:
       serviceAccountName: {{ template "wordpress-mysql.serviceAccountName" . }}
       securityContext:
       containers:
-      - name: {{ template "wordpress.fullname" . }}
-        securityContext:
-          {{- toYaml .Values.wordpress.securityContext | nindent 12 }}
-        image: {{ .Values.wordpress.image.repository }}
-        imagePullPolicy: {{ .Values.wordpress.image.pullPolicy }}
-        env:
-          - name: {{ .Values.wordpress.env.name }}
-            value:  {{ .Values.wordpress.env.value }}
-          - name: {{ .Values.wordpress.env2.name }}
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.wordpress.env2.secretKeyRef.name }}
-                key: {{ .Values.wordpress.env2.secretKeyRef.key }}
-        ports:
-          - containerPort: {{ .Values.wordpress.ports.containerPort }}
-            name: {{ .Values.wordpress.ports.name }}
-            protocol: {{ .Values.wordpress.ports.protocol }}
-        volumeMounts:
+        - name: {{ template "wordpress.fullname" . }}
+          securityContext:
+            {{- toYaml .Values.wordpress.securityContext | nindent 12 }}
+          image: {{ .Values.wordpress.image.repository }}
+          imagePullPolicy: {{ .Values.wordpress.image.pullPolicy }}
+          env:
+            - name: {{ .Values.wordpress.env.name }}
+              value:  {{ .Values.wordpress.env.value }}
+            - name: {{ .Values.wordpress.env2.name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.wordpress.env2.secretKeyRef.name }}
+                  key: {{ .Values.wordpress.env2.secretKeyRef.key }}
+          ports:
+            - containerPort: {{ .Values.wordpress.ports.containerPort }}
+              name: {{ .Values.wordpress.ports.name }}
+              protocol: {{ .Values.wordpress.ports.protocol }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+
+          volumeMounts:
           - name: {{ template "wordpress.volumes" . }}
             mountPath: {{ .Values.wordpress.volumeMounts.mountPath }}
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http
       volumes:
-        - name: {{ template "wordpress.volumes" . }}
-          persistentVolumeClaim:
-            claimName: {{ template "wordpress.persistentVolumeClaim" . }}
+      - name: {{ template "wordpress.volumes" . }}
+        persistentVolumeClaim:
+          claimName: {{ template "wordpress.persistentVolumeClaim" . }}-{{ .Release.Name }}
 
     {{- with .Values.wordpress.nodeSelector }}
     nodeSelector:
@@ -62,4 +63,4 @@ spec:
     tolerations:
       {{- toYaml . | nindent 8 }}
     {{- end }}
-{{- end }}
+  {{- end }}

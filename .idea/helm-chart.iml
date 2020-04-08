@@ -5,5 +5,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="mysql-helm-hub-git" />
+    <orderEntry type="module" module-name="Lesson4" />
+    <orderEntry type="module" module-name="Aviel-Advanced-Devops" />
   </component>
 </module>

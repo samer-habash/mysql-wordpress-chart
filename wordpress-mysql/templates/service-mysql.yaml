@@ -1,0 +1,16 @@
+{{- if and .Values.mysql.enabled .Values.mysql.service.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "wordpress-mysql.fullname" . }}
+  labels: {{- include "mysql.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.mysql.service.type }}
+  ports:
+    - port: {{ .Values.mysql.service.port }}
+      targetPort: {{ .Values.mysql.ports.containerPort }}
+      protocol: {{ .Values.mysql.ports.protocol }}
+  selector: {{- include "mysql.selectorLabels" . | nindent 4 }}
+
+  clusterIP: {{ .Values.mysql.service.clusterIP }}
+{{- end }}

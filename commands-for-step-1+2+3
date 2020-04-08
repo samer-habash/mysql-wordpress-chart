@@ -1,0 +1,12 @@
+helm create chart-assignment
+export HELM_EXPERIMENTAL_OCI=1  => New Feature for registering helm into your docker hub repo.
+helm registry login -u samer1984 https://index.docker.io/v1 => -u = dockerhub username | https://index.docker.io/v1 is the docker hub server URL 
+cd chart-assignment
+helm install three-pod-chart  ./chart-assignment --set image.repository=samer1984/avielb-todo:v1 --set replicaCount=3 --set service.type=NodePort
+
+- But the kubectl cannot create the images because it cannot pull the images and still the helm registry is Logged in successfully (tried a private docker registry with the same issue) , we can only push helm charts to the docker registries.
+
+---- Deplyo to chartmuseum
+
+helm package chart-assignment
+helm push chart-assignment-0.1.0.tgz chartmuseum

@@ -1,0 +1,13 @@
+{{- if and .Values.wordpress.enabled .Values.wordpress.PersistentVolumeClaim.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "wordpress.persistentVolumeClaim" . }}
+  labels: {{- include "mysql.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.wordpress.PersistentVolumeClaim.accessModes }}
+  resources:
+    requests:
+      storage: "{{ .Values.wordpress.PersistentVolumeClaim.storage }}"
+{{- end -}}

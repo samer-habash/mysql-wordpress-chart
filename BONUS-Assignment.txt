@@ -1,0 +1,4 @@
+1) Please note on helpers.tpl file which has the dynamic names/labels/selectorLabels/ etc ... which is defined globally accross the Chart mysql-wordpress
+2) Reason the mysql did not work because it is waiting for a secret in order to connect to DB , here is this error from the logs :
+
+3) Check please the command "helm template ./mysql-wordpress"

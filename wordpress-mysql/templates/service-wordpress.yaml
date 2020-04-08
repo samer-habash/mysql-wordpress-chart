@@ -1,0 +1,14 @@
+{{- if and .Values.wordpress.enabled .Values.wordpress.service.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "wordpress-mysql.fullname" . }}
+  labels: {{- include "wordpress.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.wordpress.service.type }}
+  ports:
+    - port: {{ .Values.wordpress.service.port }}
+      targetPort: {{ .Values.wordpress.ports.containerPort }}
+      protocol: {{ .Values.wordpress.ports.protocol }}
+  selector: {{- include "wordpress.selectorLabels" . | nindent 4 }}
+{{- end }}

@@ -6,7 +6,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/helm-chart.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/helm-chart.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/helm_template_before_installation.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/helm_template_before_installation.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wordpress-mysql/templates/Persistant-VolumeClaim-wordpress.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/wordpress-mysql/templates/Persistant-VolumeClaim-wordpress.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wordpress-mysql/templates/PersistantVolumeClaim-mysql.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/wordpress-mysql/templates/PersistantVolumeClaim-mysql.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wordpress-mysql/templates/deployment-mysql.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/wordpress-mysql/templates/deployment-mysql.yaml" afterDir="false" />

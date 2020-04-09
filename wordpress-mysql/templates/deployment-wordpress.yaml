@@ -23,25 +23,25 @@ spec:
           image: {{ .Values.wordpress.image.repository }}
           imagePullPolicy: {{ .Values.wordpress.image.pullPolicy }}
           env:
-            - name: {{ .Values.wordpress.env.name }}
+            - name: {{ template "wordpress.envDBhost" . }}
               value:  {{ .Values.wordpress.env.value }}
-            - name: {{ .Values.wordpress.env2.name }}
+            - name: {{ template "wordpress.envDBsecret" . }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.wordpress.env2.secretKeyRef.name }}
-                  key: {{ .Values.wordpress.env2.secretKeyRef.key }}
+                  name: {{ template "mysql.secret" . }}-{{ .Release.Name }}
+                  key: mysqlpass
           ports:
             - containerPort: {{ .Values.wordpress.ports.containerPort }}
               name: {{ .Values.wordpress.ports.name }}
               protocol: {{ .Values.wordpress.ports.protocol }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
 
           volumeMounts:
           - name: {{ template "wordpress.volumes" . }}

@@ -3,12 +3,12 @@ entries:
   wordpress-mysql:
   - apiVersion: v2
     appVersion: 4.8-apache
-    created: "2020-04-08T20:56:34.785336387+03:00"
+    created: "2020-04-10T00:25:08.09150249+03:00"
     description: A Helm chart for Lesson 4 Exercise
-    digest: 4af69f8f9c890b7a4b833e2252017a38c373cd029a4ba70cc9da7153279ac684
+    digest: 82d232174436f09bddc2d72c3be85b8f3bde2826ea5d16ccd9c24847a695b767
     name: wordpress-mysql
     type: application
     urls:
     - https://samer-habash.github.io/mysql-wordpress-chart/wordpress-mysql-5.6.tgz
     version: "5.6"
-generated: "2020-04-08T20:56:34.784298291+03:00"
+generated: "2020-04-10T00:25:08.090508512+03:00"

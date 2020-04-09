@@ -6,14 +6,23 @@ metadata:
   name: mysql
   labels:
     app: wordpress
-    app: wordpress
+    tier: frontend
+---
+# Source: wordpress-mysql/templates/secret-mysql.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret-releasev1
+type: Opaque
+data:
+  mysqlpass: "c2pkQTBMdkJtWA=="
 ---
 # Source: wordpress-mysql/templates/Persistant-VolumeClaim-wordpress.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   # The default name in helpers.tpl + The release name
-  name: wp-pv-claim-app-releasev1
+  name: wp-pv-claim-releasev1
   labels:
     app: wordpress
 spec:
@@ -28,7 +37,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   # The default name in helpers.tpl + The release name
-  name: mysql-pv-claim-app-releasev1
+  name: mysql-pv-claim-releasev1
   labels:
     app: wordpress
 spec:
@@ -43,7 +52,7 @@ apiVersion: v1
 kind: Service
 metadata:
   # The default name in helpers.tpl + The release name
-  name: mysql-app-releasev1
+  name: mysql-releasev1
   labels:
     app: wordpress
 spec:
@@ -62,7 +71,7 @@ apiVersion: v1
 kind: Service
 metadata:
   # The default name in helpers.tpl + The release name
-  name: wordpress-app-releasev1
+  name: wordpress-releasev1
   labels:
     app: wordpress
 spec:
@@ -80,7 +89,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   # The default name in helpers.tpl + The release name
-  name: mysql-app-releasev1
+  name: mysql-releasev1
 spec:
   replicas: 1
   selector:
@@ -107,35 +116,35 @@ spec:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mysql-pass
-                  key: password
+                  name: mysql-secret-releasev1
+                  key: mysqlpass
           ports:
             - containerPort: 3306
               name: 
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#
           volumeMounts:
             - name: mysql-persistent-storage
               mountPath: /var/lib/mysql
       volumes:
         - name: mysql-persistent-storage
           persistentVolumeClaim:
-            claimName: mysql-pv-claim-app-releasev1
+            claimName: mysql-pv-claim-releasev1
 ---
 # Source: wordpress-mysql/templates/deployment-wordpress.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   # The default name in helpers.tpl + The release name
-  name: wordpress-app-releasev1
+  name: wordpress-releasev1
 spec:
   replicas: 1
   selector:
@@ -164,20 +173,20 @@ spec:
             - name: WORDPRESS_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mysql-pass
-                  key: password
+                  name: mysql-secret-releasev1
+                  key: mysqlpass
           ports:
             - containerPort: 80
               name: 
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
 
           volumeMounts:
           - name: wordpress-persistent-storage
@@ -185,7 +194,7 @@ spec:
       volumes:
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
-          claimName: wp-pv-claim-app-releasev1
+          claimName: wp-pv-claim-releasev1
 ---
 # Source: wordpress-mysql/templates/tests/test-connection.yaml
 # Test Connection for wordpress since it can be accessed via web

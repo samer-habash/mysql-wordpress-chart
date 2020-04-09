@@ -1,6 +1,12 @@
-1) Please note on helpers.tpl file which has the dynamic names/labels/selectorLabels/ etc ... which is defined globally accross the Chart mysql-wordpress
-2) The file helm_template_before_installation.yaml describe the output of "helm template ./mysql-wordpress .
-Do not use helm template it caused an error until many attempts and I think I can create a new chart then check it this erro has been fixed .
-For more info check the unresolved error from issues of helm : https://github.com/devspace-cloud/devspace/issues/447 
-3) Reason the mysql did not work because it is waiting for a secret in order to connect to DB , here is this error from the logs with pod status  CreateContainerConfigError :-
-MYSQL_ROOT_PASSWORD:  <set to the key 'password' in secret 'mysql-pass'>  Optional: false
+ Updated a secret that will be randomly generated for MYSQL ROOT PASS .
+
+ The wordpress will crash after a while , mysql connection errors.
+
+ #I had some trouble of pvc that is not provisioned/bounded in my laptop , Github refers it is minikube new versions :
+ So I run the minikube as : minikube start --driver=docker --disk-size=50g 
+
+ Deleted the liveprob and readiness in deployments because they are unhealthy and the pods will never be ready state , they will start and created but not ready.
+
+ helpers.tpl file has the dynamic names/labels/selectorLabels/ etc ... which is defined globally accross the Chart mysql-wordpress
+
+ The file helm_template_before_installation.yaml describe the output of "helm template ./mysql-wordpress .

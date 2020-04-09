@@ -59,6 +59,20 @@ tier: {{ include "mysql.fullname" . }}
 {{- end -}}
 
 {{/*
+Mysql env
+*/}}
+{{- define "mysql.RootEnv" -}}
+{{- default "MYSQL_ROOT_PASSWORD" .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Mysql secret name
+*/}}
+{{- define "mysql.secret" -}}
+{{- default "mysql-secret" .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
 Mysql Volume
 */}}
 {{- define "mysql.volumes" -}}
@@ -87,6 +101,17 @@ Wordpress Selector labels mysql
 app: {{ include "wordpress.fullname" . }}
 tier: {{ include "wordpress.tier.fullname" . }}
 {{- end -}}
+
+{{/*
+Wordpress env
+*/}}
+{{- define "wordpress.envDBhost" -}}
+{{- default "WORDPRESS_DB_HOST" .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- define "wordpress.envDBsecret" -}}
+{{- default "WORDPRESS_DB_PASSWORD" .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
 
 {{/*
 Wordpress Volume

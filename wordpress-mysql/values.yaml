@@ -40,12 +40,6 @@ mysql:
   strategy:
     type: Recreate
 
-  env:
-    name: MYSQL_ROOT_PASSWORD
-    secretKeyRef:
-      name: mysql-pass
-      key: password
-
   ports:
     containerPort: 3306
     protocol: TCP
@@ -111,15 +105,19 @@ wordpress:
   strategy:
     type: Recreate
 
-  env:
-    name: WORDPRESS_DB_HOST
-    value: wordpress-mysql
+#  env:
+#    name: WORDPRESS_DB_HOST
+#    value: wordpress-mysql
+#
+#  env2:
+#    name: WORDPRESS_DB_PASSWORD
+#    secretKeyRef:
+#      name: mysql-pass
+#      key: password
 
-  env2:
-    name: WORDPRESS_DB_PASSWORD
-    secretKeyRef:
-      name: mysql-pass
-      key: password
+  env:
+    # The value of WORDPRESS_DB_HOST
+    value: wordpress-mysql
 
   ports:
     containerPort: 80

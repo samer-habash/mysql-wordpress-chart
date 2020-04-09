@@ -23,24 +23,24 @@ spec:
           image: {{ .Values.mysql.image.repository }}
           imagePullPolicy: {{ .Values.mysql.image.pullPolicy }}
           env:
-            - name: {{ .Values.mysql.env.name }}
+            - name: {{ template "mysql.RootEnv" }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.mysql.env.secretKeyRef.name }}
-                  key: {{ .Values.mysql.env.secretKeyRef.key }}
+                  name: {{ template "mysql.secret" . }}-{{ .Release.Name }}
+                  key: mysqlpass
           ports:
             - containerPort: {{ .Values.mysql.ports.containerPort }}
               name: {{ .Values.mysql.ports.name }}
               protocol: {{ .Values.mysql.ports.protocol }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#
           volumeMounts:
             - name: {{ template "mysql.volumes" . }}
               mountPath: {{ .Values.mysql.volumeMounts.mountPath }}

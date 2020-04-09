@@ -1,0 +1,28 @@
+MySQL can be accessed via port 3306 on the following DNS name from within your cluster:
+{{ template "mysql.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+
+To get your root password run, by default it generates a random string :
+
+    export MYSQL_ROOT_PASSWORD=$(kubectl get secrets --namespace {{ .Release.Namespace }} {{ template "mysql.secret" . }}-{{ .Release.Name }} -o jsonpath="{.data.mysqlpass}" | base64 --decode; echo)
+
+{{- if contains "ClusterIP" .Values.mysql.service.type }}
+    Run these commands to enter to you mysql :
+    export MYSQL_HOST=127.0.0.1
+    export MYSQL_PORT={{ .Values.mysql.service.port }}
+{{- end }}
+
+    To connect directly into mysql (If you are using minikube a port-forwarding should be done)
+    mysql -h  ${MYSQL_HOST} -P${MYSQL_PORT} -u root -p${MYSQL_ROOT_PASSWORD}
+
+
+For wordpress please check the commands as follows :
+
+    # Execute the following command to route the connection:
+    #If you are using minikube run ~ export MINIKUBE_IP=$(minikube ip)
+    export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+    export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" svc/{{ template "wordpress.fullname" . }}-{{ .Release.Name }})
+    # Run to port-forward to wordpress and go to homepage
+    kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ template "wordpress.fullname" . }}-{{ .Release.Name }} {{ .Values.wordpress.service.port }}:$NODE_PORT &
+
+    Go to worpress Web :    http://$NODE_IP:$NODE_PORT/
+                        or  http://$MINIKUBE_IP:$NODE_PORT/
